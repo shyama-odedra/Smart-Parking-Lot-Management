@@ -1,0 +1,1021 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="lavender">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Smart Parking Management System</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+  /* Muted Aesthetic Pastel Color Palettes */
+  :root[data-theme="lavender"] {
+    --bg-base: #EAE6F0;
+    --bg-surface: #E0D9EA;
+    --bg-card: #F7F5FA;
+    --bg-card-hover: #FFFFFF;
+    --primary: #6366F1;
+    --primary-hover: #4F46E5;
+    --primary-light: rgba(99, 102, 241, 0.12);
+    --accent: #0EA5E9;
+    
+    --status-available: #059669;
+    --status-available-bg: rgba(5, 150, 105, 0.14);
+    --status-occupied: #E11D48;
+    --status-occupied-bg: rgba(225, 29, 72, 0.14);
+
+    --text-primary: #2D2A4A;
+    --text-secondary: #5B5675;
+    --text-muted: #827C9E;
+    --border: #D8CFE5;
+    --border-strong: #C4B7D7;
+  }
+
+  :root[data-theme="sage"] {
+    --bg-base: #E5EBE6;
+    --bg-surface: #D6E2D8;
+    --bg-card: #F4F8F5;
+    --bg-card-hover: #FFFFFF;
+    --primary: #059669;
+    --primary-hover: #047857;
+    --primary-light: rgba(5, 150, 105, 0.12);
+    --accent: #0284C7;
+    
+    --status-available: #059669;
+    --status-available-bg: rgba(5, 150, 105, 0.14);
+    --status-occupied: #E11D48;
+    --status-occupied-bg: rgba(225, 29, 72, 0.14);
+
+    --text-primary: #1F362B;
+    --text-secondary: #486457;
+    --text-muted: #739183;
+    --border: #C8D8CB;
+    --border-strong: #B2C7B6;
+  }
+
+  :root[data-theme="peach"] {
+    --bg-base: #F3EBE6;
+    --bg-surface: #E8DCD4;
+    --bg-card: #FDF9F7;
+    --bg-card-hover: #FFFFFF;
+    --primary: #EA580C;
+    --primary-hover: #C2410C;
+    --primary-light: rgba(234, 88, 12, 0.12);
+    --accent: #0284C7;
+    
+    --status-available: #059669;
+    --status-available-bg: rgba(5, 150, 105, 0.14);
+    --status-occupied: #E11D48;
+    --status-occupied-bg: rgba(225, 29, 72, 0.14);
+
+    --text-primary: #422A1D;
+    --text-secondary: #6E5140;
+    --text-muted: #9C7D6B;
+    --border: #E0CFC4;
+    --border-strong: #CDBCB0;
+  }
+
+  :root[data-theme="sky"] {
+    --bg-base: #E5EEF5;
+    --bg-surface: #D5E3F0;
+    --bg-card: #F4F8FC;
+    --bg-card-hover: #FFFFFF;
+    --primary: #0284C7;
+    --primary-hover: #0369A1;
+    --primary-light: rgba(2, 132, 199, 0.12);
+    --accent: #6366F1;
+    
+    --status-available: #059669;
+    --status-available-bg: rgba(5, 150, 105, 0.14);
+    --status-occupied: #E11D48;
+    --status-occupied-bg: rgba(225, 29, 72, 0.14);
+
+    --text-primary: #1C3345;
+    --text-secondary: #455F75;
+    --text-muted: #748E9F;
+    --border: #C8D9E8;
+    --border-strong: #B3C9DC;
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg-base);
+    color: var(--text-primary);
+    font-family: 'Plus Jakarta Sans', -apple-system, sans-serif;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    min-height: 100vh;
+    transition: background 0.3s ease, color 0.3s ease;
+    position: relative;
+  }
+
+  .wrap { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
+
+  /* ---------- Top Bar Navigation ---------- */
+  nav.topbar {
+    border-bottom: 1px solid var(--border-strong);
+    background: var(--bg-surface);
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    transition: border-color 0.3s, background 0.3s;
+  }
+  .topbar-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 24px;
+    height: 64px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-weight: 800;
+    font-size: 17.5px;
+    letter-spacing: -0.01em;
+    color: var(--text-primary);
+  }
+  .brand-logo {
+    width: 36px; height: 36px; border-radius: 8px;
+    background: var(--primary);
+    display: flex; align-items: center; justify-content: center;
+    color: #FFFFFF; font-size: 16px; font-weight: 800;
+    font-family: 'JetBrains Mono', monospace;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  }
+
+  .theme-switcher {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--bg-card);
+    border: 1px solid var(--border-strong);
+    padding: 4px 10px;
+    border-radius: 99px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+  }
+  .theme-label {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    padding-right: 2px;
+  }
+  .theme-dot {
+    width: 20px; height: 20px; border-radius: 50%;
+    cursor: pointer;
+    border: 2px solid transparent;
+    transition: transform 0.2s, border-color 0.2s;
+  }
+  .theme-dot:hover { transform: scale(1.2); }
+  .theme-dot.active { border-color: var(--text-primary); transform: scale(1.1); }
+  .theme-dot.lavender { background: #C4B7D7; border-color: #6366F1; }
+  .theme-dot.sage { background: #B2C7B6; border-color: #059669; }
+  .theme-dot.peach { background: #CDBCB0; border-color: #EA580C; }
+  .theme-dot.sky { background: #B3C9DC; border-color: #0284C7; }
+
+  /* ---------- Page Header ---------- */
+  header.hero { padding: 36px 0 16px; }
+  h1.title {
+    font-weight: 800;
+    font-size: clamp(28px, 4vw, 38px);
+    margin: 0 0 8px;
+    letter-spacing: -0.02em;
+    color: var(--text-primary);
+  }
+  .subtitle {
+    max-width: 640px;
+    color: var(--text-secondary);
+    font-size: 15px;
+    margin: 0;
+    font-weight: 500;
+  }
+
+  /* ---------- Dashboard Stat Cards ---------- */
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    margin: 24px 0 32px;
+  }
+  .stat-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-strong);
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.03);
+    transition: transform .2s ease, border-color .2s ease;
+  }
+  .stat-card:hover {
+    border-color: var(--primary);
+    transform: translateY(-2px);
+  }
+  .stat-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 10px;
+  }
+  .stat-label {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  .stat-value {
+    font-size: 34px;
+    font-weight: 800;
+    color: var(--text-primary);
+    line-height: 1;
+    font-family: 'JetBrains Mono', monospace;
+  }
+  .stat-value.available { color: var(--status-available); }
+  .stat-value.occupied { color: var(--status-occupied); }
+  .stat-value.accent { color: var(--primary); }
+
+  /* ---------- Layout Grid ---------- */
+  main.main-layout {
+    display: grid;
+    grid-template-columns: 1.6fr 1fr;
+    gap: 24px;
+    padding-bottom: 64px;
+    align-items: start;
+  }
+
+  .panel-box {
+    background: var(--bg-card);
+    border: 1px solid var(--border-strong);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+  }
+  .panel-header {
+    padding: 18px 24px;
+    background: var(--bg-surface);
+    border-bottom: 1px solid var(--border-strong);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .panel-header h2 {
+    font-size: 16.5px;
+    font-weight: 800;
+    margin: 0;
+    color: var(--text-primary);
+    letter-spacing: -0.01em;
+  }
+  .panel-header .meta {
+    font-size: 13px;
+    color: var(--text-secondary);
+    font-weight: 700;
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  /* ---------- Parking Bay Grid Visualizer ---------- */
+  .parking-bays-wrapper { padding: 24px; }
+  .bay-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 14px;
+  }
+  .bay-card {
+    background: var(--bg-base);
+    border: 2px dashed var(--border-strong);
+    border-radius: 10px;
+    padding: 14px 12px;
+    min-height: 120px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    transition: all 0.2s ease;
+  }
+  .bay-card.occupied {
+    background: rgba(225, 29, 72, 0.05);
+    border: 2px solid rgba(225, 29, 72, 0.35);
+  }
+  .bay-card.available {
+    background: rgba(5, 150, 105, 0.05);
+    border: 2px dashed rgba(5, 150, 105, 0.35);
+  }
+  .bay-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .slot-tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    font-weight: 800;
+    color: var(--text-secondary);
+    letter-spacing: 0.05em;
+  }
+  .status-pill {
+    font-size: 10px;
+    font-weight: 800;
+    padding: 2px 7px;
+    border-radius: 99px;
+    letter-spacing: 0.03em;
+  }
+  .status-pill.available { background: var(--status-available-bg); color: var(--status-available); }
+  .status-pill.occupied { background: var(--status-occupied-bg); color: var(--status-occupied); }
+
+  .vehicle-info {
+    margin: 10px 0 6px;
+    text-align: center;
+  }
+  .plate-number {
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 700;
+    font-size: 12px;
+    letter-spacing: 0.04em;
+    background: var(--text-primary);
+    color: #FACC15;
+    padding: 4px 8px;
+    border-radius: 5px;
+    display: inline-block;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.12);
+  }
+  .empty-slot-text {
+    font-size: 12px;
+    color: var(--text-muted);
+    font-weight: 600;
+    text-align: center;
+    padding: 8px 0;
+  }
+
+  /* ---------- Queue Visualizer ---------- */
+  .dsa-panel {
+    border-top: 1px solid var(--border-strong);
+    padding: 20px 24px;
+    background: var(--bg-surface);
+  }
+  .dsa-heading {
+    font-size: 12px;
+    font-weight: 800;
+    color: var(--primary);
+    margin-bottom: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  .nodes-flex {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    overflow-x: auto;
+    padding: 6px 0;
+  }
+  .head-tag {
+    background: var(--primary);
+    color: #FFFFFF;
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 800;
+    font-size: 11px;
+    padding: 4px 10px;
+    border-radius: 6px;
+    flex: none;
+  }
+  .arrow-sep {
+    color: var(--text-muted);
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 800;
+    font-size: 13px;
+    flex: none;
+  }
+  .node-card {
+    background: var(--bg-card);
+    border: 1.5px solid var(--border-strong);
+    border-radius: 8px;
+    padding: 6px 10px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex: none;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+  }
+  .node-card .plate-val {
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 700;
+    font-size: 12px;
+    color: var(--text-primary);
+  }
+  .node-card .next-ptr {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--primary);
+    border-left: 1.5px solid var(--border-strong);
+    padding-left: 6px;
+    font-weight: 700;
+  }
+  .null-tag {
+    color: var(--text-muted);
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 800;
+    font-size: 12px;
+    flex: none;
+  }
+
+  /* ---------- Forms & Inputs ---------- */
+  .search-bar {
+    padding: 16px 24px;
+    border-bottom: 1px solid var(--border-strong);
+    display: flex;
+    gap: 12px;
+    background: var(--bg-base);
+  }
+  .search-bar input { flex: 1; }
+
+  form.action-form { padding: 20px 24px 16px; }
+  .form-group { margin-bottom: 16px; }
+  .form-label {
+    display: block;
+    font-size: 12.5px;
+    font-weight: 700;
+    color: var(--text-secondary);
+    margin-bottom: 6px;
+  }
+
+  input[type=text], input[type=number] {
+    width: 100%;
+    background: var(--bg-base);
+    border: 1.5px solid var(--border-strong);
+    color: var(--text-primary);
+    padding: 11px 14px;
+    border-radius: 8px;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  }
+  input[type=text]:focus, input[type=number]:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px var(--primary-light);
+  }
+  input[type=text]::placeholder { color: var(--text-muted); }
+
+  button {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-weight: 700;
+    font-size: 13.5px;
+    border-radius: 8px;
+    border: 1.5px solid var(--border-strong);
+    background: var(--bg-surface);
+    color: var(--text-primary);
+    padding: 11px 18px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+  button:hover { background: var(--border-strong); }
+  button:active { transform: scale(0.98); }
+  button.btn-primary {
+    background: var(--primary);
+    border-color: var(--primary);
+    color: #FFFFFF;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+  }
+  button.btn-primary:hover { background: var(--primary-hover); }
+  button.btn-danger {
+    background: rgba(225, 29, 72, 0.12);
+    border-color: rgba(225, 29, 72, 0.3);
+    color: #E11D48;
+  }
+  button.btn-danger:hover { background: rgba(225, 29, 72, 0.25); }
+  button.btn-small { padding: 6px 12px; font-size: 12px; }
+  button.btn-full { width: 100%; }
+
+  /* Presets */
+  .preset-section { padding: 0 24px 20px; }
+  .preset-title {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--text-secondary);
+    margin-bottom: 8px;
+  }
+  .preset-grid { display: flex; flex-wrap: wrap; gap: 6px; }
+  .preset-chip {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 4px 8px;
+    background: var(--bg-surface);
+    border: 1.5px solid var(--border-strong);
+    color: var(--primary);
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+  .preset-chip:hover {
+    background: var(--primary);
+    border-color: var(--primary);
+    color: #FFFFFF;
+  }
+
+  .capacity-bar {
+    padding: 16px 24px;
+    border-top: 1px solid var(--border-strong);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+  }
+
+  .reset-bar {
+    padding: 16px 24px;
+    border-top: 1px solid var(--border-strong);
+  }
+
+  /* ---------- Console Feed ---------- */
+  .console-panel { border-top: 1px solid var(--border-strong); }
+  .console-header {
+    padding: 16px 24px 8px;
+    background: var(--bg-surface);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .console-header h3 {
+    font-size: 14px;
+    font-weight: 800;
+    margin: 0;
+    color: var(--text-primary);
+    letter-spacing: -0.01em;
+  }
+  .console-header span {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: var(--text-muted);
+    font-weight: 700;
+  }
+  .console-body {
+    height: 220px;
+    overflow-y: auto;
+    padding: 10px 24px 20px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12.5px;
+    background: var(--bg-base);
+  }
+  .console-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 6px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .console-row:last-child { border-bottom: none; }
+  .status-indicator {
+    width: 8px; height: 8px; border-radius: 50%;
+    margin-top: 5px; flex: none;
+    background: var(--text-muted);
+  }
+  .console-row.ok .status-indicator { background: var(--status-available); }
+  .console-row.warn .status-indicator { background: var(--status-occupied); }
+  .console-row.info .status-indicator { background: var(--primary); }
+  .console-msg { color: var(--text-primary); font-weight: 600; }
+
+  footer {
+    border-top: 1px solid var(--border-strong);
+    padding: 32px 0 48px;
+    color: var(--text-muted);
+    font-size: 13px;
+    font-weight: 600;
+    text-align: center;
+  }
+
+  @media (max-width: 900px) {
+    .stats-grid { grid-template-columns: repeat(2, 1fr); }
+    main.main-layout { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<nav class="topbar">
+  <div class="topbar-inner">
+    <div class="brand">
+      <div class="brand-logo">P</div>
+      Smart Parking System
+    </div>
+    
+    <!-- Theme Selector -->
+    <div class="theme-switcher">
+      <span class="theme-label">Theme:</span>
+      <div class="theme-dot lavender active" data-theme-id="lavender" title="Pastel Lavender"></div>
+      <div class="theme-dot sage" data-theme-id="sage" title="Pastel Sage"></div>
+      <div class="theme-dot peach" data-theme-id="peach" title="Pastel Peach"></div>
+      <div class="theme-dot sky" data-theme-id="sky" title="Pastel Sky Blue"></div>
+    </div>
+  </div>
+</nav>
+
+<div class="wrap">
+
+  <header class="hero">
+    <h1 class="title">Smart Parking Management</h1>
+    <p class="subtitle">Real-time parking availability monitoring, vehicle entry and exit tracking, and automated capacity control.</p>
+  </header>
+
+  <section class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-header">
+        <span class="stat-label">Total Capacity</span>
+      </div>
+      <div class="stat-value" id="statCapacity">10</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-header">
+        <span class="stat-label">Occupied Slots</span>
+      </div>
+      <div class="stat-value occupied" id="statOccupied">8</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-header">
+        <span class="stat-label">Available Slots</span>
+      </div>
+      <div class="stat-value available" id="statAvailable">2</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-header">
+        <span class="stat-label">Occupancy Rate</span>
+      </div>
+      <div class="stat-value accent" id="statRate">80%</div>
+    </div>
+  </section>
+
+  <main class="main-layout">
+
+    <!-- Parking Lot Visual Grid -->
+    <section class="panel-box">
+      <div class="panel-header">
+        <h2>Live Parking Grid</h2>
+        <span class="meta" id="parkingCount">8 / 10 Cars</span>
+      </div>
+
+      <div class="search-bar">
+        <input type="text" id="searchInput" placeholder="Search vehicle plate (e.g. GJ06BB2222)">
+        <button class="btn-small" id="searchBtn">Search</button>
+      </div>
+
+      <div class="parking-bays-wrapper">
+        <div class="bay-grid" id="bayGrid"></div>
+      </div>
+
+      <!-- Active Flow Queue Visualizer -->
+      <div class="dsa-panel" id="dsa-section">
+        <div class="dsa-heading">Active Vehicle Queue Flow</div>
+        <div class="nodes-flex" id="linkedListVis"></div>
+      </div>
+    </section>
+
+    <!-- Side Control Panel -->
+    <aside class="panel-box">
+      <div class="panel-header">
+        <h2>Vehicle Operations</h2>
+      </div>
+
+      <form class="action-form" id="parkForm">
+        <div class="form-group">
+          <label class="form-label">License Plate Number</label>
+          <input type="text" id="plateInput" placeholder="e.g. GJ06II9999" required style="text-transform: uppercase;">
+        </div>
+        <button type="submit" class="btn-primary btn-full">Park Vehicle</button>
+      </form>
+
+      <div class="preset-section">
+        <div class="preset-title">Quick Entry Presets:</div>
+        <div class="preset-grid">
+          <button type="button" class="preset-chip" data-plate="GJ06AA1111">+ GJ06AA1111</button>
+          <button type="button" class="preset-chip" data-plate="GJ06BB2222">+ GJ06BB2222</button>
+          <button type="button" class="preset-chip" data-plate="GJ06CC3333">+ GJ06CC3333</button>
+          <button type="button" class="preset-chip" data-plate="GJ06DD4444">+ GJ06DD4444</button>
+          <button type="button" class="preset-chip" data-plate="GJ06EE5555">+ GJ06EE5555</button>
+          <button type="button" class="preset-chip" data-plate="GJ06FF6666">+ GJ06FF6666</button>
+          <button type="button" class="preset-chip" data-plate="GJ06GG7777">+ GJ06GG7777</button>
+          <button type="button" class="preset-chip" data-plate="GJ06HH8888">+ GJ06HH8888</button>
+        </div>
+      </div>
+
+      <div class="capacity-bar">
+        <span class="form-label" style="margin:0;">Total Lot Capacity</span>
+        <div style="display:flex; gap:8px;">
+          <input type="number" id="capacityInput" value="10" min="1" max="20" style="width:70px; text-align:center;">
+          <button type="button" class="btn-small" id="updateCapBtn">Update</button>
+        </div>
+      </div>
+
+      <div class="reset-bar">
+        <button type="button" id="resetBtn" class="btn-full">Reset System</button>
+      </div>
+
+      <!-- Activity Logs -->
+      <div class="console-panel" id="console-section">
+        <div class="console-header">
+          <h3>Activity Logs</h3>
+          <span id="activityCount">0 events</span>
+        </div>
+        <div class="console-body" id="activityBody"></div>
+      </div>
+    </aside>
+
+  </main>
+
+  <footer>
+    Smart Parking Management System
+  </footer>
+
+</div>
+
+<script>
+(function(){
+  function CarNode(number, nextPtr){
+    return { number: number, next: nextPtr || null };
+  }
+
+  let head = null;
+  let capacity = 10;
+  let count = 0;
+  let eventSeq = 0;
+
+  function parkCar(number){
+    if(count >= capacity){
+      log(`Parking Full! Capacity limit of ${capacity} reached. Cannot park ${number}.`, 'warn');
+      return false;
+    }
+
+    let temp = head;
+    while(temp !== null){
+      if(temp.number === number){
+        log(`Vehicle ${number} is already parked in the lot.`, 'warn');
+        return false;
+      }
+      temp = temp.next;
+    }
+
+    const newCar = CarNode(number, head);
+    head = newCar;
+    count++;
+    log(`Car ${number} parked successfully. Slots remaining: ${capacity - count}`, 'ok');
+    return true;
+  }
+
+  function removeCar(number){
+    let temp = head;
+    let prev = null;
+
+    while(temp !== null && temp.number !== number){
+      prev = temp;
+      temp = temp.next;
+    }
+
+    if(temp === null){
+      log(`Car ${number} not found in parking lot!`, 'warn');
+      return false;
+    }
+
+    if(prev === null){
+      head = temp.next;
+    } else {
+      prev.next = temp.next;
+    }
+
+    count--;
+    log(`Car ${number} exited. Slots remaining: ${capacity - count}`, 'ok');
+    return true;
+  }
+
+  function searchCar(number){
+    let temp = head;
+    let pos = 1;
+    while(temp !== null){
+      if(temp.number === number){
+        log(`Found vehicle ${temp.number} at position ${pos}`, 'info');
+        return temp.number;
+      }
+      temp = temp.next;
+      pos++;
+    }
+    log(`Vehicle ${number} not found in system`, 'warn');
+    return null;
+  }
+
+  const activityBody = document.getElementById('activityBody');
+  const activityCount = document.getElementById('activityCount');
+
+  function log(message, kind){
+    eventSeq += 1;
+    const row = document.createElement('div');
+    row.className = 'console-row ' + (kind || 'info');
+    row.innerHTML = `<span class="status-indicator"></span><span class="console-msg">${escapeHtml(message)}</span>`;
+    activityBody.appendChild(row);
+    activityBody.scrollTop = activityBody.scrollHeight;
+    activityCount.textContent = eventSeq + ' events';
+  }
+
+  function escapeHtml(str){
+    const d = document.createElement('div');
+    d.textContent = str;
+    return d.innerHTML;
+  }
+
+  const bayGrid = document.getElementById('bayGrid');
+  const linkedListVis = document.getElementById('linkedListVis');
+  const statCapacity = document.getElementById('statCapacity');
+  const statOccupied = document.getElementById('statOccupied');
+  const statAvailable = document.getElementById('statAvailable');
+  const statRate = document.getElementById('statRate');
+  const parkingCount = document.getElementById('parkingCount');
+
+  function render(highlightPlate){
+    let parkedCars = [];
+    let temp = head;
+    while(temp !== null){
+      parkedCars.push(temp.number);
+      temp = temp.next;
+    }
+
+    bayGrid.innerHTML = '';
+    for(let i = 0; i < capacity; i++){
+      const isOccupied = i < parkedCars.length;
+      const plate = isOccupied ? parkedCars[i] : null;
+      const isHighlighted = plate === highlightPlate;
+
+      const card = document.createElement('div');
+      card.className = `bay-card ${isOccupied ? 'occupied' : 'available'}`;
+      if(isHighlighted) card.style.borderColor = 'var(--primary)';
+
+      if(isOccupied){
+        card.innerHTML = `
+          <div class="bay-top">
+            <span class="slot-tag">SLOT ${i + 1}</span>
+            <span class="status-pill occupied">OCCUPIED</span>
+          </div>
+          <div class="vehicle-info">
+            <span class="plate-number">${escapeHtml(plate)}</span>
+          </div>
+          <button class="btn-danger btn-small act-exit" data-plate="${escapeHtml(plate)}">Exit Vehicle</button>
+        `;
+      } else {
+        card.innerHTML = `
+          <div class="bay-top">
+            <span class="slot-tag">SLOT ${i + 1}</span>
+            <span class="status-pill available">AVAILABLE</span>
+          </div>
+          <div class="empty-slot-text">Vacant Bay</div>
+          <div></div>
+        `;
+      }
+      bayGrid.appendChild(card);
+    }
+
+    linkedListVis.innerHTML = '';
+    const headTag = document.createElement('span');
+    headTag.className = 'head-tag';
+    headTag.textContent = 'Active Queue';
+    linkedListVis.appendChild(headTag);
+
+    temp = head;
+    if(temp === null){
+      const arrow = document.createElement('span');
+      arrow.className = 'arrow-sep';
+      arrow.textContent = '->';
+      linkedListVis.appendChild(arrow);
+
+      const nullTag = document.createElement('span');
+      nullTag.className = 'null-tag';
+      nullTag.textContent = 'Empty';
+      linkedListVis.appendChild(nullTag);
+    } else {
+      while(temp !== null){
+        const arrow = document.createElement('span');
+        arrow.className = 'arrow-sep';
+        arrow.textContent = '->';
+        linkedListVis.appendChild(arrow);
+
+        const nodeCard = document.createElement('div');
+        nodeCard.className = 'node-card';
+        if(temp.number === highlightPlate) nodeCard.style.borderColor = 'var(--primary)';
+        nodeCard.innerHTML = `
+          <span class="plate-val">${escapeHtml(temp.number)}</span>
+          <span class="next-ptr">next</span>
+        `;
+        linkedListVis.appendChild(nodeCard);
+
+        temp = temp.next;
+      }
+      const finalArrow = document.createElement('span');
+      finalArrow.className = 'arrow-sep';
+      finalArrow.textContent = '->';
+      linkedListVis.appendChild(finalArrow);
+
+      const nullTag = document.createElement('span');
+      nullTag.className = 'null-tag';
+      nullTag.textContent = 'End';
+      linkedListVis.appendChild(nullTag);
+    }
+
+    statCapacity.textContent = capacity;
+    statOccupied.textContent = count;
+    statAvailable.textContent = capacity - count;
+    const rate = capacity > 0 ? Math.round((count / capacity) * 100) : 0;
+    statRate.textContent = rate + '%';
+    parkingCount.textContent = `${count} / ${capacity} Cars`;
+  }
+
+  document.querySelectorAll('.theme-dot').forEach(dot => {
+    dot.addEventListener('click', function(){
+      document.querySelectorAll('.theme-dot').forEach(d => d.classList.remove('active'));
+      this.classList.add('active');
+      const themeId = this.dataset.themeId;
+      document.documentElement.setAttribute('data-theme', themeId);
+      log(`Switched visual theme to ${this.getAttribute('title')}`, 'info');
+    });
+  });
+
+  document.getElementById('parkForm').addEventListener('submit', function(e){
+    e.preventDefault();
+    const input = document.getElementById('plateInput');
+    const plate = input.value.trim().toUpperCase();
+    if(!plate) return;
+    if(parkCar(plate)){
+      render(plate);
+      input.value = '';
+    } else {
+      render();
+    }
+  });
+
+  bayGrid.addEventListener('click', function(e){
+    const exitBtn = e.target.closest('.act-exit');
+    if(exitBtn){
+      const plate = exitBtn.dataset.plate;
+      removeCar(plate);
+      render();
+    }
+  });
+
+  document.querySelectorAll('.preset-chip').forEach(chip => {
+    chip.addEventListener('click', function(){
+      const plate = this.dataset.plate;
+      document.getElementById('plateInput').value = plate;
+      if(parkCar(plate)){
+        render(plate);
+      } else {
+        render();
+      }
+    });
+  });
+
+  document.getElementById('searchBtn').addEventListener('click', runSearch);
+  document.getElementById('searchInput').addEventListener('keydown', function(e){
+    if(e.key === 'Enter') runSearch();
+  });
+
+  function runSearch(){
+    const val = document.getElementById('searchInput').value.trim().toUpperCase();
+    if(!val) return;
+    const found = searchCar(val);
+    render(found);
+  }
+
+  document.getElementById('updateCapBtn').addEventListener('click', function(){
+    const capInput = document.getElementById('capacityInput');
+    const newCap = parseInt(capInput.value);
+    if(newCap >= count && newCap <= 20){
+      capacity = newCap;
+      log(`Lot capacity updated to ${capacity} bays`, 'info');
+      render();
+    } else if(newCap < count) {
+      log(`Cannot set capacity to ${newCap}: ${count} cars currently inside!`, 'warn');
+    }
+  });
+
+  document.getElementById('resetBtn').addEventListener('click', function(){
+    head = null;
+    count = 0;
+    log('System reset. All parking slots are now vacant.', 'info');
+    render();
+  });
+
+  function seedDemo(){
+    log('System initialized.', 'info');
+    parkCar("GJ06AA1111");
+    parkCar("GJ06BB2222");
+    parkCar("GJ06CC3333");
+    parkCar("GJ06DD4444");
+    parkCar("GJ06EE5555");
+    parkCar("GJ06FF6666");
+    parkCar("GJ06GG7777");
+    parkCar("GJ06HH8888");
+  }
+
+  seedDemo();
+  render();
+})();
+</script>
+</body>
+</html>
