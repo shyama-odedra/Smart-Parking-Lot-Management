@@ -1,6 +1,6 @@
 # Smart Parking Lot Management System
 
-Live Application: [smartparkinglot.netlify.app](https://smartparkinglot.netlify.app/)
+Live Application: [smartparkinglotm.netlify.app](https://smartparkinglotm.netlify.app/)
 
 ## Project Overview
 
@@ -47,29 +47,35 @@ g++ -O2 parking_lot.cpp -o parking_lot
 ### Sample Terminal Output
 
 ```text
-Car GJ06AA1111 parked. Slots left: 2
-Car GJ06BB2222 parked. Slots left: 1
-Car GJ06CC3333 parked. Slots left: 0
-Cars currently parked: GJ06CC3333 GJ06BB2222 GJ06AA1111 
+Car GJ06AA1111 parked. Slots left: 9
+Car GJ06BB2222 parked. Slots left: 8
+Car GJ06CC3333 parked. Slots left: 7
+Car GJ06DD4444 parked. Slots left: 6
+Car GJ06EE5555 parked. Slots left: 5
+Car GJ06FF6666 parked. Slots left: 4
+Car GJ06GG7777 parked. Slots left: 3
+Car GJ06HH8888 parked. Slots left: 2
+Cars currently parked: GJ06HH8888 GJ06GG7777 GJ06FF6666 GJ06EE5555 GJ06DD4444 GJ06CC3333 GJ06BB2222 GJ06AA1111 
 
-Car GJ06BB2222 exited. Slots left: 1
-Cars currently parked: GJ06CC3333 GJ06AA1111 
+Car GJ06BB2222 exited. Slots left: 3
+Cars currently parked: GJ06HH8888 GJ06GG7777 GJ06FF6666 GJ06EE5555 GJ06DD4444 GJ06CC3333 GJ06AA1111 
 
-Car GJ06DD4444 parked. Slots left: 0
-Parking Full!
+Car GJ06II9999 parked. Slots left: 2
 ```
 
 ---
 
 ## Web Dashboard & Visualizer
 
+**Live Site**: [https://smartparkinglotm.netlify.app/](https://smartparkinglotm.netlify.app/)
+
 The web implementation (`index.html`) is fully self-contained with no build steps or external library dependencies.
 
 Key Features:
-- **Real-Time Parking Bay Grid**: Visual inventory rendering vacant and occupied bays.
-- **Singly Linked List Memory Visualizer**: Graphical memory pointer representation (`head -> [Node] -> NULL`).
+- **Real-Time Parking Bay Grid**: Visual inventory rendering vacant and occupied bays with pre-seeded 8 vehicles out of 10 capacity slots.
+- **Queue Visualizer**: Graphical pointer representation showing active vehicle queue flow.
 - **Dashboard Metrics**: Real-time stats for Total Capacity, Occupied Bays, Available Bays, and Occupancy Rate.
-- **System Event Console**: Monospaced event logging matching C++ output.
+- **Activity Logs**: System event console logging all entry and exit events.
 
 ---
 
@@ -79,6 +85,7 @@ Key Features:
 1. Connect your repository in Netlify.
 2. Set Build Command to empty (static HTML).
 3. Set Publish Directory to `/` (root directory).
+4. Deployed Live URL: `https://smartparkinglotm.netlify.app/`
 
 ### GitHub Pages Deployment
 1. Navigate to Repository Settings -> **Pages**.
@@ -89,4 +96,4 @@ Key Features:
 
 ## Portfolio Summary
 
-> Engineered a Smart Parking Lot System in C++ utilizing a custom singly linked list for dynamic memory allocation and capacity constraints. Developed an interactive live web visualizer in JavaScript demonstrating real-time pointer manipulations and algorithmic state transitions.
+> Engineered a Smart Parking Lot System in C++ utilizing a custom singly linked list for dynamic memory allocation and capacity constraints. Developed an interactive live web visualizer in JavaScript demonstrating real-time pointer manipulations and algorithmic state transitions. Live demo: https://smartparkinglotm.netlify.app/
